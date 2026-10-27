@@ -32,7 +32,7 @@ const OBJ = [
 ];
 
 /* ---------- storage ---------- */
-const blank = () => ({ v: 1, name: '', settings: { presale: 2, spec: 1.75, floor: 50, goal: 4 }, goals: {}, days: {}, lastExport: '' });
+const blank = () => ({ v: 1, name: '', settings: { presale: null, spec: null, floor: 50, goal: 4 }, goals: {}, days: {}, lastExport: '' });
 let DB = load();
 function load() {
   try { const raw = localStorage.getItem(KEY); if (raw) { const d = JSON.parse(raw); return Object.assign(blank(), d, { settings: Object.assign(blank().settings, d.settings || {}) }); } } catch (e) { /* storage blocked */ }
@@ -76,7 +76,8 @@ function weekRange(dIso) {
   const out = []; for (let i = 0; i < 7; i++) { const x = new Date(start); x.setDate(start.getDate() + i); out.push(iso(x)); }
   return out;
 }
-const commission = (s) => (s.price ? s.price * (s.kind === 'spec' ? DB.settings.spec : DB.settings.presale) / 100 : 0);
+const commission = (s) => (s.price ? s.price * (Number(s.kind === 'spec' ? DB.settings.spec : DB.settings.presale) || 0) / 100 : 0);
+const ratesSet = () => DB.settings.presale != null && DB.settings.spec != null;
 
 /* ---------- ui helpers ---------- */
 function toast(msg, undo) {
@@ -127,7 +128,7 @@ function viewMonth() {
     ['Show-up rate', pct(show), `${t.c.held} held of ${t.c.set} set`],
     ['Close rate', pct(close), `${t.salesN} sale${t.salesN === 1 ? '' : 's'} from ${t.visits} visit${t.visits === 1 ? '' : 's'}`],
     ['Sales', String(t.salesN), `${t.first} first visit · ${t.beback} be-back`],
-    ['Est. commission', t.sales.length ? money(comm) : '$0', `${set.presale}% presale · ${set.spec}% spec, paid at closing${noPrice ? ` · ${noPrice} without a price` : ''}`]
+    ['Est. commission', !ratesSet() ? '—' : t.sales.length ? money(comm) : '$0', !ratesSet() ? 'Add your commission rates in Settings' : `${set.presale}% presale · ${set.spec}% spec, paid at closing${noPrice ? ` · ${noPrice} without a price` : ''}`]
   ].map(([a, b, c]) => `<div class="kpi"><div class="t">${a}</div><div class="v">${b}</div><div class="s">${esc(c)}</div></div>`).join('');
 
   const goal = DB.goals[mk] != null ? DB.goals[mk] : set.goal;
@@ -169,7 +170,7 @@ function viewMore() {
   const s = DB.settings, n = Object.keys(DB.days).length;
   return `<section class="card" style="display:flex;flex-direction:column;gap:12px"><h2>You</h2>
     <label class="f">Your name<input id="m_name" value="${esc(DB.name)}" autocomplete="name" placeholder="Shown at the top and on exports"></label>
-    <div class="row"><label class="f">Presale commission %<input id="m_pre" type="number" step="0.01" inputmode="decimal" value="${s.presale}"></label><label class="f">Spec commission %<input id="m_spec" type="number" step="0.01" inputmode="decimal" value="${s.spec}"></label></div>
+    <div class="row"><label class="f">Presale commission %<input id="m_pre" type="number" step="0.01" inputmode="decimal" value="${s.presale ?? ''}" placeholder="Your %"></label><label class="f">Spec commission %<input id="m_spec" type="number" step="0.01" inputmode="decimal" value="${s.spec ?? ''}" placeholder="Your %"></label></div>
     <div class="row"><label class="f">Weekly activity floor<input id="m_floor" type="number" inputmode="numeric" value="${s.floor}"></label><label class="f">Default monthly sales goal<input id="m_goal" type="number" inputmode="numeric" value="${s.goal}"></label></div>
     <button class="btn primary" data-a="savesettings">Save</button></section>
   <section class="card" style="display:flex;flex-direction:column;gap:10px"><h2>Your numbers</h2>
@@ -227,7 +228,7 @@ const A = {
   savesettings: () => {
     const num = (id, dflt) => { const v = parseFloat(document.getElementById(id).value); return isFinite(v) && v >= 0 ? v : dflt; };
     DB.name = document.getElementById('m_name').value.trim();
-    DB.settings = { presale: num('m_pre', 2), spec: num('m_spec', 1.75), floor: Math.max(1, Math.round(num('m_floor', 50))), goal: Math.max(1, Math.round(num('m_goal', 4))) };
+    DB.settings = { presale: num('m_pre', null), spec: num('m_spec', null), floor: Math.max(1, Math.round(num('m_floor', 50))), goal: Math.max(1, Math.round(num('m_goal', 4))) };
     save(); render(); toast('Saved');
   },
   export: () => exportCSV(),

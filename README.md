@@ -13,7 +13,7 @@ Open `charlescarper.com/sales-tracker/` on your phone, then Share, Add to Home S
   Use the arrows to fix an earlier day.
 - **Month tab.** Show-up rate, close rate, sales, estimated commission, objections beaten by type,
   and goal math: change your sales goal and see the visits and appointments it takes.
-- **Settings.** Your name, commission rates, weekly activity floor, default goal.
+- **Settings.** Your name, your commission rates (from your own agreement; they stay on your phone), weekly activity floor, default goal.
   Export or import a CSV. Erase everything.
 
 ## How the numbers work
@@ -22,7 +22,7 @@ Open `charlescarper.com/sales-tracker/` on your phone, then Share, Add to Home S
 |---|---|
 | Show-up rate | Appointments held ÷ appointments set |
 | Close rate | Sales ÷ (appointments held + walk-ins) |
-| Est. commission | Each sale's price × presale or spec rate (defaults 2% and 1.75%) |
+| Est. commission | Each sale's price × the presale or spec rate you enter in Settings |
 | Visits needed | Sales still needed ÷ close rate |
 | Appointments to set | (Visits needed − walk-ins expected for the rest of the month at your pace) ÷ show-up rate |
 | Activities this week | Monday through Sunday, against your weekly floor (default 50) |
