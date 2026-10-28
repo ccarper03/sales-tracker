@@ -1,5 +1,7 @@
 # Sales Tracker
 
+**Archived (Oct 28, 2026).** No longer hosted. charlescarper.com/sales-tracker/ now forwards to the home page.
+
 A phone tracker for new home sales reps. Each rep's numbers stay on their own phone.
 Nothing is sent anywhere, and nobody else can see them.
 
